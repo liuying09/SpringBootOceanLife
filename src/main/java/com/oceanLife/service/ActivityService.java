@@ -51,7 +51,7 @@ public class ActivityService {
 		aModel.setActivityRemark(activityModel.getActivityRemark().replace("\n", "<br>"));
 		aModel.setActivityImg(image);
 		aModel.setActivityStatus(activityModel.getActivityStatus());
-		aModel.setUpdateDate(activityModel.getUpdateDate());
+		aModel.setUpdateDate(DateUtils.getDateTimeFormat("yyyy-MM-dd"));
 		
 		activityRepository.save(aModel);
 
@@ -66,7 +66,7 @@ public class ActivityService {
 		return activityRepository.findAll();
 	}
 	
-	public void delete(@RequestParam(name="idList",required = false) Integer[] ids ) {
+	public void delete(Integer[] ids) {
 		for(int i = 0; i < ids.length; i++) {
 			if(activityRepository.findByActivityId(ids[i]) != null) {
 				activityRepository.deleteById(ids[i]);

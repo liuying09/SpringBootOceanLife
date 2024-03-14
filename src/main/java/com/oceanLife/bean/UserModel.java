@@ -17,10 +17,7 @@ public class UserModel {
 	 private int userId;
 	
 	@Column(name="userAccount")
-	 private String userAccount;
-	
-	@Column(name="userSalt")
-	private String userSalt;
+	 private String userAccount;	
 
 	@Column(name="userPass")
 	private String userPass;
@@ -63,6 +60,10 @@ public class UserModel {
 	
 	@Column(name="update_date")
 	 private String updateDate;
+	
+	@Column(name="userRole")
+	 private String userRole;
+	
 
 	public int getUserId() {
 		return userId;
@@ -191,13 +192,15 @@ public class UserModel {
 	public void setUpdateDate(String updateDate) {
 		this.updateDate = updateDate;
 	}
-	
-	public String getUserSalt() {
-		return userSalt;
+
+	public String getUserRole() {
+		return userRole;
 	}
 
-	public void setUserSalt(String userSalt) {
-		this.userSalt = userSalt;
+	public void setUserRole(String userRole) {
+		this.userRole = userRole;
 	}
+	
+
 	
 }
