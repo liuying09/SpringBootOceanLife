@@ -26,6 +26,7 @@ public class ActivityService {
 
 	public void upsert(ActivityCreateDTO activityCreateDTO) throws IOException {
 		
+		System.out.println("upsert=========");
 	    ActivityModel activityModel = activityCreateDTO.getActivityModel();
 	    MultipartFile fileField = activityCreateDTO.getFileField();
 		ActivityModel aModel;

@@ -13,22 +13,30 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.oceanLife.filter.JwtAuthenticationFilter;
 
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
 public class SecurityConfig {
 	
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,JwtAuthenticationFilter authFilter) throws Exception {
         http.authorizeHttpRequests(registry -> registry
+        						.requestMatchers(HttpMethod.GET, "/api/user").hasAuthority("ADMIN")
                                 .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/user").hasAuthority("ADMIN")
+                                .requestMatchers(HttpMethod.POST, "/api/user/login").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/user/refresh-token").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/activity").hasAuthority("ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/api/activity").hasAuthority("ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/api/activity/?*").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/activity").permitAll()
                                 .anyRequest().authenticated()
-                )
+        						)
                 .csrf(AbstractHttpConfigurer::disable)
-        		.formLogin(); // 可直接使用測試畫面
+        		.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
     

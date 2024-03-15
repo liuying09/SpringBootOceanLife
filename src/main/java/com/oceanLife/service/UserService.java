@@ -13,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.oceanLife.bean.UserModel;
 import com.oceanLife.dao.UserRepository;
 import com.oceanLife.dto.UserCreateDTO;
+import com.oceanLife.enumlist.UserRole;
+import com.oceanLife.enumlist.UserStatus;
 import com.oceanLife.utils.DateUtils;
 
 @Service
@@ -63,8 +65,8 @@ public class UserService {
 		uModel.setUserPhone(user.getUserPhone());
 		uModel.setUserSub(user.getUserSub());
 		
-		uModel.setUserStatus(userCreateDTO.getUserStatus().toString());
-		uModel.setUserRole(userCreateDTO.getUserRole().toString());
+		uModel.setUserStatus(userCreateDTO.getUserStatus());
+		uModel.setUserRole(userCreateDTO.getUserRole());
 		
 		uModel.setUpdateDate(DateUtils.getDateTimeFormat("yyyy-MM-dd"));
 		
@@ -82,6 +84,14 @@ public class UserService {
 	
 	public boolean isUserExist(String userAccount) {
 		return userRepository.existsByUserAccount(userAccount);
+	}
+	
+	
+	public void delete(Integer id) {
+		UserModel user = userRepository.findByUserId(id);
+		user.setUserStatus(UserStatus.OFF);
+		user.setUpdateDate(DateUtils.getDateTimeFormat("yyyy-MM-dd"));
+		userRepository.save(user);
 	}
 	
 }

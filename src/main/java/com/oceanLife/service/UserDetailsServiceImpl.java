@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.oceanLife.bean.UserModel;
 import com.oceanLife.enumlist.UserRole;
+import com.oceanLife.utils.UserDetail;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -30,15 +31,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		}
 		
 		// 使用者的role列表
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        for (UserRole role : UserRole.values()) {
-            if (role.name().equals(userModel.getUserRole())) {
-            	System.out.println("role.name()= "+role.name());
-                authorities.add(new SimpleGrantedAuthority(role.name()));
-            }
-        }
+//        List<GrantedAuthority> authorities = new ArrayList<>();
+//        for (UserRole role : UserRole.values()) {
+//            if (role.name().equals(userModel.getUserRole())) {
+//            	System.out.println("role.name()= "+role.name());
+//                authorities.add(new SimpleGrantedAuthority(role.name()));
+//            }
+//        }
 		
-		return new User(userModel.getUserAccount(), userModel.getUserPass(), authorities);
+//		return new User(userModel.getUserAccount(), userModel.getUserPass(), authorities);
+		return new UserDetail(userModel);
 	}
 
 }

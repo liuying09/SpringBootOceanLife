@@ -1,7 +1,12 @@
 package com.oceanLife.bean;
 
+import com.oceanLife.enumlist.UserRole;
+import com.oceanLife.enumlist.UserStatus;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,7 +34,8 @@ public class UserModel {
 	private String userGender;
 	
 	@Column(name="userStatus")
-	private String userStatus;
+	@Enumerated(EnumType.STRING)
+	private UserStatus userStatus;
 	
 	@Column(name="userBirth")
 	private String userBirth;
@@ -62,7 +68,8 @@ public class UserModel {
 	 private String updateDate;
 	
 	@Column(name="userRole")
-	 private String userRole;
+	@Enumerated(EnumType.STRING)
+	 private UserRole userRole;
 	
 
 	public int getUserId() {
@@ -105,11 +112,12 @@ public class UserModel {
 		this.userGender = userGender;
 	}
 
-	public String getUserStatus() {
+
+	public UserStatus getUserStatus() {
 		return userStatus;
 	}
 
-	public void setUserStatus(String userStatus) {
+	public void setUserStatus(UserStatus userStatus) {
 		this.userStatus = userStatus;
 	}
 
@@ -193,14 +201,13 @@ public class UserModel {
 		this.updateDate = updateDate;
 	}
 
-	public String getUserRole() {
+	public UserRole getUserRole() {
 		return userRole;
 	}
 
-	public void setUserRole(String userRole) {
+	public void setUserRole(UserRole userRole) {
 		this.userRole = userRole;
 	}
-	
 
 	
 }
