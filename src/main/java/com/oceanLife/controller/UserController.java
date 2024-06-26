@@ -28,8 +28,6 @@ import com.oceanLife.token.TokenService;
 import com.oceanLife.utils.UserIdentity;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -46,7 +44,6 @@ public class UserController {
     @Autowired
     private UserIdentity userIdentity;
 	
-    @SecurityRequirements
     @Operation(summary = "登入", description = "使用者登入")
 	@PostMapping("/login")
 	public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
@@ -63,7 +60,7 @@ public class UserController {
         return ResponseEntity.ok(res);
     }
 	
-    @SecurityRequirements
+	
     @Operation(summary = "新增、更新使用者", description = "新增、更新使用者資料")
 	@PostMapping()
 	public ResponseEntity<Map<String, Object>> upsert(@RequestBody UserCreateDTO userCreateDTO){
@@ -86,6 +83,7 @@ public class UserController {
 			throw new RuntimeException("Error creating or updating user.", e);
 		}
 	}
+    
     
     @Operation(summary = "搜尋使用者", description = "搜尋出全部使用者資料")
     @GetMapping()
