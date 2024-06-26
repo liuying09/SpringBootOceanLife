@@ -53,7 +53,8 @@ public class UserService {
 		
 		// 密碼加密
 		String encodedPassword = passwordEncoder.encode(user.getUserPass());
-		user.setUserPass(encodedPassword);
+
+		uModel.setUserPass(encodedPassword);
 		
 		uModel.setUserAccount(user.getUserAccount());
 		uModel.setUserName(user.getUserName());
