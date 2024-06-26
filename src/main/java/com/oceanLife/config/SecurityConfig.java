@@ -24,7 +24,7 @@ public class SecurityConfig {
 	
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,JwtAuthenticationFilter authFilter) throws Exception {
-        http.authorizeHttpRequests(registry -> registry
+    	http.authorizeHttpRequests(registry -> registry
         						.requestMatchers(HttpMethod.GET, "/api/user").hasAuthority("ADMIN")
                                 .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/user/login").permitAll()
@@ -33,10 +33,17 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, "/api/activity").hasAuthority("ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/api/activity/?*").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/activity").permitAll()
+                                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                                .requestMatchers("/h2-console/**").permitAll() //fot h2db
                                 .anyRequest().authenticated()
         						)
                 .csrf(AbstractHttpConfigurer::disable)
         		.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
+    	// for h2db(測試完可刪掉)
+        http.headers((headers) -> headers
+                        .frameOptions((frameOptions) -> frameOptions.sameOrigin())
+        );
+
         return http.build();
     }
     
