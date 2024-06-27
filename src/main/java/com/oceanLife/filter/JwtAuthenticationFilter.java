@@ -34,7 +34,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,FilterChain filterChain) 
 			   throws ServletException, IOException {
 	        
-		   System.out.println("doFilterInternal==========");
 		   
 	        // 取得 request header 的值
 	        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -43,13 +42,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	        if (bearerToken != null) {
 	            String accessToken = bearerToken.replace("Bearer ", "");
 	            
-	            System.out.println("accessToken= "+accessToken);
 	            
 	            // 解析 token
 	            Map<String, Object> tokenPayload = tokenService.parseToken(accessToken);
 	            String username = (String) tokenPayload.get("username");
 	            
-	            System.out.println("username= "+username);
 	            
 	            // 查詢使用者
 	            UserDetails userDetails = userDetailsService.loadUserByUsername(username);

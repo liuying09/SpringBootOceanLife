@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Spring Boot 電子郵件範本</title>
+  <style>
+  	.header {
+  		height: auto;
+  		width: 820px;
+  		min-width: 820px;
+  		margin: 0 auto;
+  		margin-top: 20px;
+  		border: 1px solid #eee;
+  	}
+  	.code-text{
+  		text-align: center;
+  		font-size: 22px;
+  		color: #c60024;
+  		padding: 20px 0px;
+  		margin-bottom: 10px;
+  		font-weight: bold;
+  		background: #ebebeb;
+  	}
+  	
+  </style>
+  
+</head>
+<body>
+	<div class="header">
+		<div style="padding: 10px;padding-bottom: 0px;">
+			<p style="margin-bottom: 10px;padding-bottom: 0px;">親愛的用戶，您好: </p>
+			<p style="text-indent: 2em;margin-bottom: 10px;">您的電子郵件認證碼為: </p>
+			<p class="code-text" th:text="${code}"></p>
+		</div>
+	</div>
+</body>
+</html>

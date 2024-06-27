@@ -29,6 +29,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/user/login").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/user/refresh-token").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/user/sendCodeMail/?*").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/activity").hasAuthority("ADMIN")
                                 .requestMatchers(HttpMethod.DELETE, "/api/activity").hasAuthority("ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/api/activity/?*").permitAll()

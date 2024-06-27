@@ -12,6 +12,7 @@ public class UserCreateDTO {
 	private UserStatus userStatus;
 	private UserRole userRole;
 	private MultipartFile fileField;
+	private String authCode;
 	
 	
 	public UserModel getUserModel() {
@@ -39,6 +40,12 @@ public class UserCreateDTO {
 	}
 	public void setFileField(MultipartFile fileField) {
 		this.fileField = fileField;
+	}
+	public String getAuthCode() {
+		return authCode;
+	}
+	public void setAuthCode(String authCode) {
+		this.authCode = authCode;
 	}
 	
 	
