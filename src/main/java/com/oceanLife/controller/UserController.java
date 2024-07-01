@@ -10,6 +10,8 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -42,6 +44,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/api/user")
 @Tag(name = "會員") //swagger api標題
 public class UserController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 	
 	@Autowired
 	private UserService userService;
@@ -87,44 +91,43 @@ public class UserController {
 			if (userService.isUserExist(userCreateDTO.getUserModel().getUserAccount())) {
 				userService.upsert(userCreateDTO);
 		        response.put("message", "使用者更新 - 成功");
-		        response.put("status", 200);
 		        return ResponseEntity.ok(response);
 			}
 				
 			int status = userCodeValidate.codeValidate(userCreateDTO.getUserModel().getUserAccount(), userCreateDTO.getAuthCode());
-			System.out.println("status= "+status);	
 			if(status==UserCodeValidate.CHECKCODE.notExist) {		
 				response.put("message", "使用者新增 - 失敗，驗證碼失效");
-			    response.put("status", 400);
-			    return ResponseEntity.ok(response);
+			    return ResponseEntity.badRequest().body(response);
 			    
 			}
 			if(status==UserCodeValidate.CHECKCODE.NoMatch) {
-				response.put("message", "使用者新增 - 失敗，驗證碼輸入錯誤");
-			    response.put("status", 400);
-			    return ResponseEntity.ok(response);
+				response.put("message", "使用者新增 - 失敗，無輸入驗證碼或驗證碼輸入錯誤");
+			    return ResponseEntity.badRequest().body(response);
 			}
 			
 			userService.upsert(userCreateDTO);
 		    response.put("message", "使用者新增 - 成功");
-		    response.put("status", 200);
 	        return ResponseEntity.ok(response);
 	        
 		} catch (IOException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Error creating or updating user.", e);
+			logger.error(e.getMessage());
+			throw new RuntimeException("Error creating or updating user.");
 		}
 	}
     
     @Operation(summary = "搜尋使用者", description = "搜尋出全部使用者資料")
     @GetMapping()
-    public ResponseEntity<List<UserModel>> getUsers(){
+    public ResponseEntity<Map<String, Object>> getUsers(){
+    	Map<String, Object> response = new HashMap<>();
     	List<UserModel> list = userService.getUsers();
     	
     	if(list.size() != 0) {
-    		return ResponseEntity.status(HttpStatus.OK).body(list);
+    		response.put("message", "使用者 - 搜尋成功");
+    		response.put("user", list);
+    		return ResponseEntity.status(HttpStatus.OK).body(response);
     	}else {
-    		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+    		response.put("message", "使用者 - 搜尋成功，目前無任何使用者");
+    		return ResponseEntity.status(HttpStatus.OK).body(response);
     	}
     }
 
@@ -149,8 +152,7 @@ public class UserController {
     	
     	if (userService.isUserExist(mail)){
 	        response.put("message", "註冊 - 此帳號已存在");
-	        response.put("status", 400);
-	        return ResponseEntity.ok(response);
+	        return ResponseEntity.badRequest().body(response);
     	}
     	
     	String datastr =  (String) redisTemplate.opsForValue().get(mail);
@@ -159,8 +161,7 @@ public class UserController {
     		long timestamp = data.getLong("time");
     		if(timestamp >= System.currentTimeMillis()) {
     	        response.put("message", "註冊 - 驗證信已發送過,操作過於頻繁");
-    	        response.put("status", 400);
-    	        return ResponseEntity.ok(response);
+    	        return ResponseEntity.badRequest().body(response);
     		}
     	}
     	
@@ -181,14 +182,10 @@ public class UserController {
 			
 			redisTemplate.opsForValue().set(mail, jsonObject.toString(), 10 ,TimeUnit.MINUTES);
 		    response.put("message", "註冊 - 驗證信發送");
-		    response.put("status", 200);
 		    
 		    return ResponseEntity.ok(response);
 		}else {
-		    response.put("message", "註冊 - 驗證信發送失敗");
-		    response.put("status", 500);
-		    
-		    return ResponseEntity.badRequest().body(response);
+		    throw new RuntimeException("Error! sending mail is fail");
 		}
     }
    

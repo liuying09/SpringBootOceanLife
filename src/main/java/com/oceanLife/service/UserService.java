@@ -31,7 +31,6 @@ public class UserService {
 	public void upsert(UserCreateDTO userCreateDTO) throws IOException {
 
 		UserModel user = userCreateDTO.getUserModel();
-		MultipartFile fileField = userCreateDTO.getFileField();
 		UserModel uModel;
 		
 		// 檢查使用者帳號是否唯一
@@ -41,15 +40,6 @@ public class UserService {
 			uModel = new UserModel();
 			uModel.setCreateDate(DateUtils.getDateTimeFormat("yyyy-MM-dd"));
 		}
-
-		
-		byte[] image;
-		if (fileField == null) {
-			image = null;
-		} else {
-			image = fileField.getBytes();
-		}
-		uModel.setUserImg(image);
 		
 		// 密碼加密
 		String encodedPassword = passwordEncoder.encode(user.getUserPass());
@@ -66,8 +56,8 @@ public class UserService {
 		uModel.setUserPhone(user.getUserPhone());
 		uModel.setUserSub(user.getUserSub());
 		
-		uModel.setUserStatus(userCreateDTO.getUserStatus());
-		uModel.setUserRole(userCreateDTO.getUserRole());
+		uModel.setUserStatus(user.getUserStatus());
+		uModel.setUserRole(user.getUserRole());
 		
 		uModel.setUpdateDate(DateUtils.getDateTimeFormat("yyyy-MM-dd"));
 		

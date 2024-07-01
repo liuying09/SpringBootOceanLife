@@ -1,4 +1,4 @@
-package com.oceanLife.utils;
+package com.oceanLife.handler;
 
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
@@ -15,25 +15,15 @@ import jakarta.servlet.http.HttpServletRequest;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<ErrorDTO> handleGlobalException(Exception ex, HttpServletRequest request) {
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ErrorDTO> handleRuntimeException(RuntimeException  ex, HttpServletRequest request) {
         ErrorDTO errorDto = new ErrorDTO();
         errorDto.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorDto.setError("Internal Server Error");
         errorDto.setMessage(ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDto);
-
-    }
-    
-    @ExceptionHandler(ResponseStatusException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ErrorDTO> handleResponseStatusException(ResponseStatusException  ex, HttpServletRequest request) {
-        ErrorDTO errorDto = new ErrorDTO();
-        errorDto.setStatus(HttpStatus.NOT_FOUND.value());
-        errorDto.setError("Not Found");
-        errorDto.setMessage(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDto);
     }
     
     

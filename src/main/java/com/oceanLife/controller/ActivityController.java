@@ -45,38 +45,47 @@ public class ActivityController {
 			activityService.upsert(activityCreateDTO);
 			
 	        Map<String, Object> response = new HashMap<>();
-	        response.put("message", "新增、更新-活動成功");
-	        response.put("status", 200);
+	        response.put("message", "活動 - 新增、更新成功");
 			
 	        return ResponseEntity.ok(response);
 		} catch (IOException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Error creating or updating activity.", e);
+			logger.error(e.getMessage());
+			throw new RuntimeException("Error creating or updating activity");
 		}
 	}
     
     @Operation(summary = "搜尋活動", description = "透過活動ID，搜尋出對應活動資料")
     @GetMapping("{id}")
-	public ResponseEntity<ActivityModel> getActivityById(@PathVariable("id") Integer id){
+	public ResponseEntity<Map<String, Object>> getActivityById(@PathVariable("id") Integer id){
+    	Map<String, Object> response = new HashMap<>();
     	ActivityModel activityModel = activityService.getActivityById(id);
     	
     	if(activityModel != null) {
-    		return ResponseEntity.status(HttpStatus.OK).body(activityModel);
+    		response.put("message", "活動 - 搜尋成功");
+    		response.put("activity", activityModel);
+    		
+    		return ResponseEntity.status(HttpStatus.OK).body(response);
     	}else {
-    		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity not found");
+    		response.put("message", "活動 - 搜尋成功，目前無任何活動");
+    		return ResponseEntity.status(HttpStatus.OK).body(response);
     	}
     	
     }
     
     @Operation(summary = "搜尋活動", description = "搜尋出全部活動資料")
     @GetMapping()
-	public ResponseEntity<List<ActivityModel>> getActivity(){
+	public ResponseEntity<Map<String, Object>> getActivity(){
+    	Map<String, Object> response = new HashMap<>();
+    	
     	List<ActivityModel> list = activityService.getActivity();
     	
     	if(list.size() != 0) {
-    		return ResponseEntity.status(HttpStatus.OK).body(list);
+    		response.put("message", "活動 - 搜尋成功");
+    		response.put("activity", list);
+    		return ResponseEntity.status(HttpStatus.OK).body(response);
     	}else {
-    		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity not found");
+    		response.put("message", "活動 - 搜尋成功，目前無任何活動");
+    		return ResponseEntity.status(HttpStatus.OK).body(response);
     	}
 	}
     
@@ -87,11 +96,9 @@ public class ActivityController {
     	activityService.delete(ids);
     		
 	    Map<String, Object> response = new HashMap<>();
-	    response.put("message", "刪除-活動成功");
-	    response.put("status", 200);
+	    response.put("message", "活動 - 刪除成功");
 			
 	    return ResponseEntity.ok(response);
-    	
     }
     
 }

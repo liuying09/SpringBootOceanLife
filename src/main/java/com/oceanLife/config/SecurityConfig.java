@@ -1,5 +1,9 @@
 package com.oceanLife.config;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,15 +16,28 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oceanLife.filter.JwtAuthenticationFilter;
+import com.oceanLife.handler.CustomAccessDeniedHandler;
+import com.oceanLife.handler.CustomAuthenticationEntryPoint;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+	
+	@Autowired
+	private CustomAccessDeniedHandler accessDeniedHandler;
+	
+	@Autowired
+	private CustomAuthenticationEntryPoint authenticationEntryPoint ;
 	
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,JwtAuthenticationFilter authFilter) throws Exception {
@@ -38,12 +55,15 @@ public class SecurityConfig {
                                 .requestMatchers("/h2-console/**").permitAll() //fot h2db
                                 .anyRequest().authenticated()
         						)
-                .csrf(AbstractHttpConfigurer::disable)
-        		.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
-    	// for h2db(測試完可刪掉)
-        http.headers((headers) -> headers
-                        .frameOptions((frameOptions) -> frameOptions.sameOrigin())
-        );
+    		.csrf(AbstractHttpConfigurer::disable)
+        	.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+        	// 自訂未驗證回傳訊息
+            .exceptionHandling(exceptionHandling -> exceptionHandling
+            					.authenticationEntryPoint(authenticationEntryPoint)
+            					.accessDeniedHandler(accessDeniedHandler))
+        	// for h2db(測試完可刪掉)
+        	.headers((headers) -> headers
+                     .frameOptions((frameOptions) -> frameOptions.sameOrigin()));
 
         return http.build();
     }
@@ -65,4 +85,5 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    
 }
