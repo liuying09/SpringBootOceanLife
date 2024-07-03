@@ -33,6 +33,14 @@ public class DataLoader implements ApplicationRunner {
 			
 			userRepository.save(uModel);
 		}
+		UserModel uModel;
+		for(int i = 0; i <100; i++) {
+			uModel = new UserModel();
+			uModel.setUserAccount("account" + i);
+			uModel.setUserPass(passwordEncoder.encode("123456"));
+			userRepository.save(uModel);
+		}
+		
 	}
 
 	

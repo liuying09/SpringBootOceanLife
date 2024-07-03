@@ -7,7 +7,7 @@ public class UserCreateDTO {
 
 	private UserModel userModel;
 	private String authCode;
-	
+	private int actionType;
 	
 	public UserModel getUserModel() {
 		return userModel;
@@ -21,6 +21,13 @@ public class UserCreateDTO {
 	}
 	public void setAuthCode(String authCode) {
 		this.authCode = authCode;
+	}
+	
+	public int getActionType() {
+		return actionType;
+	}
+	public void setActionType(int actionType) {
+		this.actionType = actionType;
 	}
 	
 	

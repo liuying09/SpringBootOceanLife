@@ -6,6 +6,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,13 +31,13 @@ public class UserService {
 	private PasswordEncoder passwordEncoder;
 
 	public void upsert(UserCreateDTO userCreateDTO) throws IOException {
-
+		int actionType = userCreateDTO.getActionType();
 		UserModel user = userCreateDTO.getUserModel();
 		UserModel uModel;
 		
-		// 檢查使用者帳號是否唯一
-		if (userRepository.existsByUserAccount(user.getUserAccount())) {
-			uModel = userRepository.findByUserAccount(user.getUserAccount());
+		// 新增 or 更新
+		if (actionType == 2) {
+			uModel = getByUserAccount(user.getUserAccount());
 		}else {
 			uModel = new UserModel();
 			uModel.setCreateDate(DateUtils.getDateTimeFormat("yyyy-MM-dd"));
@@ -65,8 +67,8 @@ public class UserService {
 		userRepository.save(uModel);
 	}
 	
-	public List<UserModel> getUsers(){
-		return userRepository.findAll();
+	public Page<UserModel> getUsers(Pageable pageable){
+		return userRepository.findAll(pageable);
 	}
 	
 	public UserModel getByUserAccount(String userAccount) {

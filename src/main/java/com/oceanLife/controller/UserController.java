@@ -13,6 +13,11 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +27,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -37,6 +43,7 @@ import com.oceanLife.utils.UserCodeValidate;
 import com.oceanLife.utils.UserIdentity;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -87,27 +94,39 @@ public class UserController {
 	@PostMapping()
 	public ResponseEntity<Map<String, Object>> upsert(@RequestBody UserCreateDTO userCreateDTO){
     	Map<String, Object> response = new HashMap<>();
+    	int actionType = userCreateDTO.getActionType();
+    	String userAccount = userCreateDTO.getUserModel().getUserAccount();
+    	
 		try {
-			if (userService.isUserExist(userCreateDTO.getUserModel().getUserAccount())) {
-				userService.upsert(userCreateDTO);
-		        response.put("message", "使用者更新 - 成功");
-		        return ResponseEntity.ok(response);
-			}
-				
-			int status = userCodeValidate.codeValidate(userCreateDTO.getUserModel().getUserAccount(), userCreateDTO.getAuthCode());
-			if(status==UserCodeValidate.CHECKCODE.notExist) {		
-				response.put("message", "使用者新增 - 失敗，驗證碼失效");
+			/* create */
+			if(actionType == 1) {
+				if (!userService.isUserExist(userAccount)) {
+					
+					// 確認驗證碼
+					int status = userCodeValidate.codeValidate(userAccount, userCreateDTO.getAuthCode());
+					if(status==UserCodeValidate.CHECKCODE.notExist) {		
+						response.put("message", "使用者新增 - 失敗，驗證碼失效");
+					    return ResponseEntity.badRequest().body(response);
+					    
+					}
+					if(status==UserCodeValidate.CHECKCODE.NoMatch) {
+						response.put("message", "使用者新增 - 失敗，無輸入驗證碼或驗證碼輸入錯誤");
+					    return ResponseEntity.badRequest().body(response);
+					}
+					
+					userService.upsert(userCreateDTO);
+				    response.put("message", "使用者新增 - 成功");
+			        return ResponseEntity.ok(response);
+				}
+				response.put("message", "使用者新增 - 失敗，此帳號已存在");
 			    return ResponseEntity.badRequest().body(response);
-			    
-			}
-			if(status==UserCodeValidate.CHECKCODE.NoMatch) {
-				response.put("message", "使用者新增 - 失敗，無輸入驗證碼或驗證碼輸入錯誤");
-			    return ResponseEntity.badRequest().body(response);
-			}
 			
-			userService.upsert(userCreateDTO);
-		    response.put("message", "使用者新增 - 成功");
-	        return ResponseEntity.ok(response);
+			/* update */
+			}else {
+				userService.upsert(userCreateDTO);
+			    response.put("message", "使用者更新 - 成功");
+			    return ResponseEntity.ok(response);
+			}
 	        
 		} catch (IOException e) {
 			logger.error(e.getMessage());
@@ -115,21 +134,52 @@ public class UserController {
 		}
 	}
     
-    @Operation(summary = "搜尋使用者", description = "搜尋出全部使用者資料")
+    @Operation(summary = "取得使用者清單", description = "取得全部使用者清單")
     @GetMapping()
-    public ResponseEntity<Map<String, Object>> getUsers(){
-    	Map<String, Object> response = new HashMap<>();
-    	List<UserModel> list = userService.getUsers();
+    public ResponseEntity<Map<String, Object>> getUsers(
+    	    @Parameter(description = "排序欄位")
+    		@RequestParam(name = "sortby", defaultValue = "userId") String sortBy,
+    		@Parameter(description = "排序升降冪")
+            @RequestParam(name = "direction", defaultValue = "ASC") Direction direction,
+            @Parameter(description = "當前頁數")
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @Parameter(description = "每筆頁數，預設10筆")
+            @RequestParam(name = "size", defaultValue = "10") int size){
     	
-    	if(list.size() != 0) {
+    	Map<String, Object> response = new HashMap<>();
+    	Page<UserModel> userPage = userService.getUsers(PageRequest.of(page, size, Sort.by(direction, sortBy)));
+    	List<UserModel> userList = userPage.getContent();
+    	if(!userList.isEmpty()) {
     		response.put("message", "使用者 - 搜尋成功");
-    		response.put("user", list);
+    		response.put("user", userList);
+            response.put("totalElements", userPage.getTotalElements()); // 總筆數
+            response.put("totalPages", userPage.getTotalPages()); // 總頁數
+            response.put("currentPage", userPage.getNumber()); // 目前頁碼
+            response.put("pageSize", userPage.getSize()); // 每頁幾筆
     		return ResponseEntity.status(HttpStatus.OK).body(response);
     	}else {
     		response.put("message", "使用者 - 搜尋成功，目前無任何使用者");
     		return ResponseEntity.status(HttpStatus.OK).body(response);
     	}
     }
+    
+    
+//    @Operation(summary = "搜尋使用者", description = "搜尋出全部使用者資料")
+//    @GetMapping()
+//    public ResponseEntity<Map<String, Object>> getUsers(Pageable pageable){
+//    	Map<String, Object> response = new HashMap<>();
+//    	Page<UserModel> list = userService.getUsers(pageable);
+//    	
+//    	if(!list.isEmpty()) {
+//    		response.put("message", "使用者 - 搜尋成功");
+//    		response.put("user", list);
+//    		return ResponseEntity.status(HttpStatus.OK).body(response);
+//    	}else {
+//    		response.put("message", "使用者 - 搜尋成功，目前無任何使用者");
+//    		return ResponseEntity.status(HttpStatus.OK).body(response);
+//    	}
+//    }
+
 
     @Operation(summary = "停用使用者", description = "將使用者狀態設為停用")
     @DeleteMapping("{id}")
@@ -175,11 +225,13 @@ public class UserController {
 			JSONObject jsonObject = new JSONObject();
 			
 			Instant now = Instant.now();
+			// 1分鐘過後可再發送一次驗證碼
 			long oneMinuteLaterTimestamp = now.plus(Duration.ofMinutes(1)).toEpochMilli();
 			 
 			jsonObject.put("code", code);
 			jsonObject.put("time", oneMinuteLaterTimestamp);
 			
+			// 設定10分鐘過期
 			redisTemplate.opsForValue().set(mail, jsonObject.toString(), 10 ,TimeUnit.MINUTES);
 		    response.put("message", "註冊 - 驗證信發送");
 		    
