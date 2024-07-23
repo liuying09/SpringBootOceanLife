@@ -25,27 +25,29 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.oceanLife.bean.UserModel;
-import com.oceanLife.dto.LoginRequest;
-import com.oceanLife.dto.LoginResponse;
-import com.oceanLife.dto.UserCreateDTO;
-import com.oceanLife.enumlist.UserRole;
+import com.oceanLife.model.bean.UserModel;
+import com.oceanLife.model.req.LoginRequest;
+import com.oceanLife.model.req.UserCreateDTO;
+import com.oceanLife.model.res.LoginResponse;
+import com.oceanLife.security.TokenService;
+import com.oceanLife.security.UserIdentity;
 import com.oceanLife.service.MailService;
 import com.oceanLife.service.UserService;
-import com.oceanLife.token.TokenService;
 import com.oceanLife.utils.UserCodeValidate;
-import com.oceanLife.utils.UserIdentity;
+import com.oceanLife.utils.enumlist.UserRole;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/user")
@@ -75,7 +77,7 @@ public class UserController {
     @SecurityRequirements
     @Operation(summary = "登入", description = "使用者登入")
 	@PostMapping("/login")
-	public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+	public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
 		 LoginResponse res = tokenService.createToken(request);
 		return ResponseEntity.ok(res);
 	}
@@ -180,18 +182,26 @@ public class UserController {
 //    	}
 //    }
 
+    @Operation(summary = "取得單一使用者", description = "使用ID取得指定使用者")
+    @GetMapping("{userId}")
+    public ResponseEntity<Map<String, Object>> getUserById(@PathVariable int userId){
+    	Map<String, Object> response = new HashMap<>();
+    	UserModel user = userService.getByUserId(userId);
+    	
+		response.put("message", "使用者 - 搜尋成功");
+		response.put("user", user);
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+    
 
     @Operation(summary = "停用使用者", description = "將使用者狀態設為停用")
-    @DeleteMapping("{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
+    @PutMapping("{id}")
+    public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable Integer id) {
+    	Map<String, Object> response = new HashMap<>();
     	
-    	UserRole userRole = userIdentity.getRole();
-    	if(userRole == UserRole.ADMIN) {
-        	userService.delete(id);
-        	return ResponseEntity.ok().build();
-    	}else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+    	userService.disableUser(id);
+    	response.put("message", "使用者 - 停用成功");
+    	return ResponseEntity.status(HttpStatus.OK).body(response);
     }
     
     @SecurityRequirements

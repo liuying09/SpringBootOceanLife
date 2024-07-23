@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.oceanLife.bean.ArticleModel;
+import com.oceanLife.model.bean.ArticleModel;
 
 import jakarta.transaction.Transactional;
 

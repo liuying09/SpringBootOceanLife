@@ -12,12 +12,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.oceanLife.bean.UserModel;
 import com.oceanLife.dao.UserRepository;
-import com.oceanLife.dto.UserCreateDTO;
-import com.oceanLife.enumlist.UserRole;
-import com.oceanLife.enumlist.UserStatus;
+import com.oceanLife.model.bean.UserModel;
+import com.oceanLife.model.req.UserCreateDTO;
 import com.oceanLife.utils.DateUtils;
+import com.oceanLife.utils.enumlist.UserRole;
+import com.oceanLife.utils.enumlist.UserStatus;
 
 @Service
 public class UserService {
@@ -75,12 +75,16 @@ public class UserService {
 		return userRepository.findByUserAccount(userAccount);
 	}
 	
+	public UserModel getByUserId(int userId) {
+		return userRepository.findByUserId(userId);
+	}
+	
 	public boolean isUserExist(String userAccount) {
 		return userRepository.existsByUserAccount(userAccount);
 	}
 	
 	
-	public void delete(Integer id) {
+	public void disableUser(Integer id) {
 		UserModel user = userRepository.findByUserId(id);
 		user.setUserStatus(UserStatus.OFF);
 		user.setUpdateDate(DateUtils.getDateTimeFormat("yyyy-MM-dd"));

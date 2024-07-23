@@ -2,7 +2,7 @@ package com.oceanLife.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.oceanLife.bean.UserModel;
+import com.oceanLife.model.bean.UserModel;
 
 public interface UserRepository extends JpaRepository<UserModel,Integer>{
 	

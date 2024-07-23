@@ -6,10 +6,10 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.oceanLife.bean.UserModel;
 import com.oceanLife.dao.UserRepository;
-import com.oceanLife.enumlist.UserRole;
-import com.oceanLife.enumlist.UserStatus;
+import com.oceanLife.model.bean.UserModel;
+import com.oceanLife.utils.enumlist.UserRole;
+import com.oceanLife.utils.enumlist.UserStatus;
 
 @Component
 public class DataLoader implements ApplicationRunner {
@@ -33,13 +33,13 @@ public class DataLoader implements ApplicationRunner {
 			
 			userRepository.save(uModel);
 		}
-		UserModel uModel;
-		for(int i = 0; i <100; i++) {
-			uModel = new UserModel();
-			uModel.setUserAccount("account" + i);
-			uModel.setUserPass(passwordEncoder.encode("123456"));
-			userRepository.save(uModel);
-		}
+//		UserModel uModel;
+//		for(int i = 0; i <100; i++) {
+//			uModel = new UserModel();
+//			uModel.setUserAccount("account" + i);
+//			uModel.setUserPass(passwordEncoder.encode("123456"));
+//			userRepository.save(uModel);
+//		}
 		
 	}
 

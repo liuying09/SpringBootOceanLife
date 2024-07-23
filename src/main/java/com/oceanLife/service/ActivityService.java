@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.oceanLife.bean.ActivityModel;
 import com.oceanLife.dao.ActivityRepository;
-import com.oceanLife.dto.ActivityCreateDTO;
+import com.oceanLife.model.bean.ActivityModel;
+import com.oceanLife.model.req.ActivityCreateDTO;
 import com.oceanLife.utils.DateUtils;
 
 

@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.oceanLife.bean.ActivityModel;
-import com.oceanLife.dto.ActivityCreateDTO;
+import com.oceanLife.model.bean.ActivityModel;
+import com.oceanLife.model.req.ActivityCreateDTO;
 import com.oceanLife.service.ActivityService;
 
 import io.swagger.v3.oas.annotations.Operation;
