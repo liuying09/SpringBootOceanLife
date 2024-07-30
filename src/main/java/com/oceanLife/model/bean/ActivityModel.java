@@ -1,5 +1,7 @@
 package com.oceanLife.model.bean;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -38,10 +40,10 @@ public class ActivityModel {
 	private String activityStatus;
 
 	@Column(name="create_date")
-	 private String createDate;
+	 private LocalDateTime createDate;
 	
 	@Column(name="update_date")
-	 private String updateDate;
+	 private LocalDateTime updateDate;
 
 	public int getActivityId() {
 		return activityId;
@@ -107,19 +109,19 @@ public class ActivityModel {
 		this.activityStatus = activityStatus;
 	}
 
-	public String getCreateDate() {
+	public LocalDateTime getCreateDate() {
 		return createDate;
 	}
 
-	public void setCreateDate(String createDate) {
+	public void setCreateDate(LocalDateTime createDate) {
 		this.createDate = createDate;
 	}
 
-	public String getUpdateDate() {
+	public LocalDateTime getUpdateDate() {
 		return updateDate;
 	}
 
-	public void setUpdateDate(String updateDate) {
+	public void setUpdateDate(LocalDateTime updateDate) {
 		this.updateDate = updateDate;
 	}
 

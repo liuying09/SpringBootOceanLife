@@ -1,13 +1,13 @@
 package com.oceanLife.service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.oceanLife.dao.ActivityRepository;
@@ -26,7 +26,7 @@ public class ActivityService {
 
 	public void upsert(ActivityCreateDTO activityCreateDTO) throws IOException {
 		
-		System.out.println("upsert=========");
+		LocalDateTime dt = LocalDateTime.now();
 	    ActivityModel activityModel = activityCreateDTO.getActivityModel();
 	    MultipartFile fileField = activityCreateDTO.getFileField();
 		ActivityModel aModel;
@@ -42,7 +42,7 @@ public class ActivityService {
 	    	aModel = activityRepository.findByActivityId(activityModel.getActivityId());
 	    }else {
 	    	aModel = new ActivityModel();
-	    	aModel.setCreateDate(DateUtils.getDateTimeFormat("yyyy-MM-dd"));
+	    	aModel.setCreateDate(dt);
 	    }
 		
 		aModel.setActivityTitle(activityModel.getActivityTitle());
@@ -52,7 +52,7 @@ public class ActivityService {
 		aModel.setActivityRemark(activityModel.getActivityRemark().replace("\n", "<br>"));
 		aModel.setActivityImg(image);
 		aModel.setActivityStatus(activityModel.getActivityStatus());
-		aModel.setUpdateDate(DateUtils.getDateTimeFormat("yyyy-MM-dd"));
+		aModel.setUpdateDate(dt);
 		
 		activityRepository.save(aModel);
 

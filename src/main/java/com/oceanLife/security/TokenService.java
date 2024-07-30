@@ -22,14 +22,13 @@ import com.oceanLife.utils.exception.CustomAuthenticationException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 
 @Service
 public class TokenService {
-
-	private Key secretKey;
-	private JwtParser jwtParser;
 
 	@Autowired
 	private AuthenticationProvider authenticationProvider;
@@ -43,14 +42,6 @@ public class TokenService {
 	@Value("${jwt.refresh.expiration}")
 	private long refreshExpiration;
 	
-	@PostConstruct
-	private void init() {
-		String key = secret;
-		secretKey = Keys.hmacShaKeyFor(key.getBytes());
-
-		jwtParser = Jwts.parserBuilder().setSigningKey(secretKey).build();
-	}
-
 	public LoginResponse createToken(LoginRequest request) {
 
 		try {
@@ -90,8 +81,6 @@ public class TokenService {
 	private String createAccessToken(String username) {
 		// 有效時間（毫秒）
 		long expirationMillis = System.currentTimeMillis() + accessExpiration * 1000;
-		System.out.println("expirationMillis= "+expirationMillis);
-		System.out.println("new Date(expirationMillis)= "+new Date(expirationMillis));
 		// 設置標準內容與自定義內容
 		Claims claims = Jwts.claims();
 		claims.setSubject("Access Token");
@@ -100,7 +89,7 @@ public class TokenService {
 		claims.put("username", username);
 
 		// 簽名後產生 token
-		return Jwts.builder().setClaims(claims).signWith(secretKey).compact();
+		return Jwts.builder().setClaims(claims).signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
 	}
 
 	// 創立 refresh token
@@ -113,7 +102,7 @@ public class TokenService {
 		claims.setExpiration(new Date(expirationMillis));
 		claims.put("username", username);
 
-		return Jwts.builder().setClaims(claims).signWith(secretKey).compact();
+		return Jwts.builder().setClaims(claims).signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
 	}
 
 	public String refreshAccessToken(String refreshToken) {
@@ -126,8 +115,14 @@ public class TokenService {
 	// 解析token
 	public Map<String, Object> parseToken(String token) {
 
-		Claims claims = jwtParser.parseClaimsJws(token).getBody();
+		Claims claims = Jwts.parserBuilder().setSigningKey(getSignKey()).build()
+											.parseClaimsJws(token).getBody();
 		return new HashMap<>(claims);
+	}
+	
+	private Key getSignKey() {
+		byte[] keyBytes = Decoders.BASE64.decode(secret);
+		return Keys.hmacShaKeyFor(keyBytes);
 	}
 	
 	// Checks if the JWT token is expired.

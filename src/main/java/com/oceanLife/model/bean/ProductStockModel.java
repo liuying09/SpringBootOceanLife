@@ -1,5 +1,7 @@
 package com.oceanLife.model.bean;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,16 +22,16 @@ public class ProductStockModel {
 	 private String productId;
 	
 	@Column(name="productType")
-	 private String productType;
+	 private String productType; // 規格
 	
 	@Column(name="productNum")
-	 private String productNum;
+	 private String productNum; // 庫存數量
 
 	@Column(name="create_date")
-	 private String createDate;
+	 private LocalDateTime createDate;
 	
 	@Column(name="update_date")
-	 private String updateDate;
+	 private LocalDateTime updateDate;
 	
 	public int getProductStockId() {
 		return productStockId;
@@ -63,19 +65,19 @@ public class ProductStockModel {
 		this.productNum = productNum;
 	}
 
-	public String getCreateDate() {
+	public LocalDateTime getCreateDate() {
 		return createDate;
 	}
 
-	public void setCreateDate(String createDate) {
+	public void setCreateDate(LocalDateTime createDate) {
 		this.createDate = createDate;
 	}
 
-	public String getUpdateDate() {
+	public LocalDateTime getUpdateDate() {
 		return updateDate;
 	}
 
-	public void setUpdateDate(String updateDate) {
+	public void setUpdateDate(LocalDateTime updateDate) {
 		this.updateDate = updateDate;
 	}
 	

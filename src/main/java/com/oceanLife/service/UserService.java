@@ -1,6 +1,7 @@
 package com.oceanLife.service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -31,6 +32,8 @@ public class UserService {
 	private PasswordEncoder passwordEncoder;
 
 	public void upsert(UserCreateDTO userCreateDTO) throws IOException {
+		
+		LocalDateTime dt = LocalDateTime.now();
 		int actionType = userCreateDTO.getActionType();
 		UserModel user = userCreateDTO.getUserModel();
 		UserModel uModel;
@@ -40,7 +43,7 @@ public class UserService {
 			uModel = getByUserAccount(user.getUserAccount());
 		}else {
 			uModel = new UserModel();
-			uModel.setCreateDate(DateUtils.getDateTimeFormat("yyyy-MM-dd"));
+			uModel.setCreateDate(dt);
 		}
 		
 		// 密碼加密
@@ -61,7 +64,7 @@ public class UserService {
 		uModel.setUserStatus(user.getUserStatus());
 		uModel.setUserRole(user.getUserRole());
 		
-		uModel.setUpdateDate(DateUtils.getDateTimeFormat("yyyy-MM-dd"));
+		uModel.setUpdateDate(dt);
 		
 		// 保存用户信息
 		userRepository.save(uModel);
@@ -85,9 +88,10 @@ public class UserService {
 	
 	
 	public void disableUser(Integer id) {
+		LocalDateTime dt = LocalDateTime.now();
 		UserModel user = userRepository.findByUserId(id);
 		user.setUserStatus(UserStatus.OFF);
-		user.setUpdateDate(DateUtils.getDateTimeFormat("yyyy-MM-dd"));
+		user.setUpdateDate(dt);
 		userRepository.save(user);
 	}
 	

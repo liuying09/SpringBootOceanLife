@@ -1,5 +1,7 @@
 package com.oceanLife.model.bean;
 
+import java.time.LocalDateTime;
+
 import com.oceanLife.utils.enumlist.UserRole;
 import com.oceanLife.utils.enumlist.UserStatus;
 
@@ -62,10 +64,10 @@ public class UserModel {
 	private String favoriteID;
 	
 	@Column(name="create_date")
-	 private String createDate;
+	 private LocalDateTime createDate;
 	
 	@Column(name="update_date")
-	 private String updateDate;
+	 private LocalDateTime updateDate;
 	
 	@Column(name="userRole")
 	@Enumerated(EnumType.STRING)
@@ -185,19 +187,19 @@ public class UserModel {
 		this.favoriteID = favoriteID;
 	}
 
-	public String getCreateDate() {
+	public LocalDateTime getCreateDate() {
 		return createDate;
 	}
 
-	public void setCreateDate(String createDate) {
+	public void setCreateDate(LocalDateTime createDate) {
 		this.createDate = createDate;
 	}
 
-	public String getUpdateDate() {
+	public LocalDateTime getUpdateDate() {
 		return updateDate;
 	}
 
-	public void setUpdateDate(String updateDate) {
+	public void setUpdateDate(LocalDateTime updateDate) {
 		this.updateDate = updateDate;
 	}
 
